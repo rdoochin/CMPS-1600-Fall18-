@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 
-public abstract class CalcGUI {
+
+public abstract class CalcGUI{
 
     public static class Calculator extends JFrame{
         JTextField calArea;
@@ -193,7 +194,7 @@ public abstract class CalcGUI {
             });
             add(mult, layoutConst);
 
-            JButton equal = new JButton();      //SEE 12.14 !!!!!!
+            JButton equal = new JButton();
             equal.setText("=");
             layoutConst.gridx = 4;
             layoutConst.gridy = 8;
@@ -204,6 +205,10 @@ public abstract class CalcGUI {
                     if(!isValidInput(calArea)){
                         calArea.setText("Invalid Input.");
                     }
+                    String input = calArea.getText();
+                    Calculate calInput = new Calculate(input);
+                    calArea.setText(calInput.calculate());
+
                 }
             });
 
@@ -231,6 +236,18 @@ public abstract class CalcGUI {
             });
             add(closePar, layoutConst);
 
+            JButton clear = new JButton();
+            clear.setText("clear");
+            layoutConst.gridx = 2;
+            layoutConst.gridy = 8;
+            clear.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    calArea.setText("");
+                }
+            });
+            add(clear, layoutConst);
+
 
         }
 
@@ -239,65 +256,49 @@ public abstract class CalcGUI {
        */
 
         public boolean isValidInput(JTextField inputField) {
-            String newCal = inputField.toString();
+            String newCal = inputField.getText();
             int count1 = 0;
             int count2 = 0;
-            char[] newCalArray = newCal.toCharArray();     //converts the string into an array to loop it
+            int answer = 0;
 
             for (int i = 0; i < newCal.length(); i++) {
-                if (newCalArray[i] == '(') {
+
+                /*
+                Getting the number of open and close parenthesis.
+                 */
+                if (newCal.charAt(i) == '(') {
                     count1 += 1;
                 }
-                if (newCalArray[i] == ')') {
+                if (newCal.charAt(i) == ')') {
                     count2 += 1;
+                }
+
+                /*
+                Checking to see if operators are next to
+                each other.
+                 */
+                if((newCal.charAt(i) == '*' || newCal.charAt(i) == '+' || newCal.charAt(i) == '-')
+                && (newCal.charAt(i+1) == '*' || newCal.charAt(i+1) == '+' || newCal.charAt(i+1) == '-')){
+                    return false;
                 }
             }
 
-
-            try {
-                if (newCal.contains("++")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("--")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("**")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("+-")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("+*")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("*-")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("*+")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("-+")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (newCal.contains("-*")) {
-                    throw new Exception("Invalid input.");
-                }
-                if (count1 != count2) {
-                    throw new Exception(("Invalid input."));
-                }
-                for(int i = 0; i < newCal.length(); i++){
-                    if(newCalArray[i]== ')' && !newCal.substring(0,i).contains("(")){
-                        throw new Exception("Invalid input.");
-                    }
-                    if(newCal.substring(newCal.length()-1,newCal.length()).contains("*+-(")){
-                        throw new Exception("Invalid input.");
-                    }
-                }
-            } catch (Exception e1) {
-                calArea.setText("Invalid input.");
+            if(count1 != count2){
                 return false;
+            }
 
-            } finally {
+             /*
+                Checking to see if an operator is the first char.
+                 */
+            if(newCal.charAt(0) == '*' || newCal.charAt(0) == '+' ||
+                    newCal.charAt(0) == '-' || newCal.charAt(0) == ')'){
+                return false;
+            }
+            if(newCal.charAt(newCal.length()-1) == '('){
+                return false;
+            }
+
+            else {
                 return true;
             }
 

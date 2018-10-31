@@ -7,6 +7,7 @@ public class myLong {
     private ArrayList<Integer> bigAdd;      //declaring arrays for the addLong()
     private ArrayList<Integer> lilAdd;
 
+
     private String getReturn = "";
     String negInput = "";
 
@@ -38,24 +39,22 @@ public class myLong {
         for (int i = 0 ; i< inputString.length(); i++){
 
             if(inputString.charAt(0) == '-'){
-                i += 1;
-                temp.add(Integer.parseInt(inputString.substring(i, i+1)));
+
+                temp.add(Integer.parseInt(inputString.substring(i+1, i+2)));
                 temp.set(0, temp.get(0)*-1);
             }
-           // else {
+            else {
                 temp.add(Integer.parseInt(inputString.substring(i, i + 1)));
-            //}
+            }
+
         }
         longArray = temp;
     }
-
-    //displays the long value on the monitor
 
     /*
     Displays the array on the monitor
      */
     public String getLong() {
-       // String newStrang = longArray.toString();
         for (int i = 0 ; i < this.longArray.size() ;i++) {
            getReturn = getReturn.concat(this.longArray.get(i).toString());
         }
@@ -65,18 +64,18 @@ public class myLong {
         return getReturn;
     }
 
+    public String toString(){
+        return this.getLong();
+    }
 
-
-    //a method to add long integers
-
-    public String addLong(myLong myLongObj) {
+    public myLong addLong(myLong myLongObj) {
 
         ArrayList<Integer> answerAdd = new ArrayList<Integer>();
 
         /*
         Accounting for negative numbers.
          */
-        if(this.longArray.toString().contains("-") && myLongObj.longArray.toString().contains("-")){    //both neg
+        if(this.longArray.toString().contains("-") && myLongObj.longArray.toString().contains("-")){
             String thisSt = this.longArray.toString();
             String myLongObjSt = myLongObj.longArray.toString();
             thisSt = thisSt.replace("-","");
@@ -90,7 +89,7 @@ public class myLong {
             return newThis.addLong(newObj);
         }
 
-        if(myLongObj.longArray.size() <= this.longArray.size()) { //bc each myLong object has its own longArray
+        if(myLongObj.longArray.size() <= this.longArray.size()) {
             bigAdd = this.longArray;
             lilAdd = myLongObj.longArray;
         }
@@ -109,7 +108,7 @@ public class myLong {
 
                 answer = (Integer.valueOf(bigAdd.get(i)) + Integer.valueOf(lilAdd.get(i)));
 
-                if (answer >= 10 && i != 0) {      //carrying the 1
+                if (answer >= 10 && i != 0) {
                     answer -= 10;
                     int newI = i - 1;
                     bigAdd.set(newI, Integer.valueOf(bigAdd.get(newI)) + 1);
@@ -125,11 +124,11 @@ public class myLong {
             newSet = newSet.concat(answerAdd.get(i).toString());
         }
       returnAdd.setLong(newSet);
-      return returnAdd.getLong();
+      return returnAdd;
     }
 
 
-    public String subtractLong(myLong subOjb){
+    public myLong subtractLong(myLong subOjb){
 
         ArrayList<Integer> answerSub = new ArrayList<Integer>();
         ArrayList<Integer> invertAnswer = new ArrayList<Integer>();
@@ -145,9 +144,15 @@ public class myLong {
         Put the longer array on the 'top'.
         If you have to flip, add negative symbol at end of method.
          */
-        if(this.longArray.size() > subOjb.longArray.size()){
+        if(Integer.valueOf(this.getLong()) > Integer.valueOf(subOjb.getLong())){
+
             bigSub = this.longArray;
             lilSub = subOjb.longArray;
+        }
+
+        if(Integer.valueOf(subOjb.getLong()) > Integer.valueOf(this.getLong())){
+            bigSub = subOjb.longArray;
+            lilSub = this.longArray;
         }
 
         if(this.longArray.size() == subOjb.longArray.size()){
@@ -156,15 +161,15 @@ public class myLong {
                 bigSub = this.longArray;
                 lilSub = subOjb.longArray;
 
-            }/////**************************    add an else statement for when theyre = (it will = 0) & 1 for neg symb
+            }
             else {
                 bigSub = subOjb.longArray;
                 lilSub = this.longArray;
                 negCount = "neg";
             }
         }
-        else {                              //if this executes, add the neg symbol
-            bigSub = subOjb.longArray;      //*************DONT FORGET**********************
+        if(this.longArray.size() < subOjb.longArray.size()){
+            bigSub = subOjb.longArray;
             lilSub = this.longArray;
             negCount = "neg";
         }
@@ -181,7 +186,7 @@ public class myLong {
         /*
         Inverts the two arrays.
          */
-        for (int i = (bigSub.size()-1); i > -1; i--){           //try in implement invertArray() ?
+        for (int i = (bigSub.size()-1); i > -1; i--){
             invertBig.add(bigSub.get(i));
             invertLil.add(lilSub.get(i));
         }
@@ -197,8 +202,8 @@ public class myLong {
             Determining if you need to borrow from the column over.
             */
             if(Integer.valueOf(invertBig.get(i)) < Integer.valueOf(invertLil.get(i))){
-                invertBig.set(i + 1, Integer.valueOf(invertBig.get(i+1)) - 1);      //resets the borrowed-from -- check this
-                invertBig.set(i, Integer.valueOf(invertBig.get(i)) + 10);               //adds 10 to the borrowing
+                invertBig.set(i + 1, Integer.valueOf(invertBig.get(i+1)) - 1);
+                invertBig.set(i, Integer.valueOf(invertBig.get(i)) + 10);
             }
 
 
@@ -217,7 +222,7 @@ public class myLong {
 
         }
 
-        for (int j = (invertAnswer.size()-1); j > -1; j--){       //come back to in a sec
+        for (int j = (invertAnswer.size()-1); j > -1; j--){
             answerSub.add(invertAnswer.get(j));
         }
 
@@ -227,17 +232,21 @@ public class myLong {
             strang = strang.concat(answerSub.get(r).toString());
         }
 
+
         if(negCount == "neg"){
             strang = "-" + strang;
         }
 
-        return strang;
+        myLong returnSub = new myLong();
+        returnSub.setLong(strang);
+
+        return returnSub;       //was return strang;
     }
 
 
 
 
-    public String multiplyLong(myLong multObj){
+    public myLong multiplyLong(myLong multObj){
 
         ArrayList<String> arrayArray = new ArrayList<String>();
 
@@ -256,8 +265,7 @@ public class myLong {
                 if(carry != ' '){
                     int c = carry - '0';
                     val += c;
-                    //carry = ' ';
-                    //System.out.println(val);
+
                 }
                 if(val > 9 && j != 0){
                     String valString = Integer.toString(val);
@@ -284,22 +292,32 @@ public class myLong {
 
         for(int a = 1; a < arrayArray.size(); a++){
             add.setLong(arrayArray.get(a));
-            sum.setLong(sum.addLong(add));
+            sum.setLong(sum.addLong(add).toString());
         }
 
         if(this.negInput == "neg" && multObj.negInput == ""){
-            //sum.setLong("-" + sum.getLong());
             sumString = sum.getLong();
             sumString = "-"+ sumString;
         }
 
-        /*
-        sum.setLong("");
-        System.out.println(sum.getLong());
-        sum.setLong(sumString);
-        System.out.println(sum.getLong());
-        */
 
-        return sum.getLong();
+        return sum;
     }
+
+
+    /*
+    For the = function on the calculator.
+    Returns false if there's an open parenthesis
+    left in the string.
+     */
+    public boolean parLeft(){           //helps take care of first order of operation as well
+        String longString = this.longArray.toString();
+        for(int i = 0; i < longString.length(); i++){
+            if (longString.charAt(i) == '('){
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
